@@ -114,6 +114,13 @@ def test_edit_username(test_app, test_database, add_user):
     client = test_app.test_client()
     resp = client.put(f'/users/{user.id}', data=json.dumps({ 'username': 'john21' }), content_type='application/json')
     data = json.loads(resp.data.decode())
-    print(data)
     assert resp.status_code == 200
     assert f'User username changed from john to john21' in data.get('message')
+    
+def test_delete_user(test_app, test_database, add_user):
+    user = add_user('john', 'john@algonquinlive.com')
+    client = test_app.test_client()
+    resp = client.delete(f'/users/{user.id}', content_type='application/json')
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 200
+    assert f'User {user.id} has been deleted' in data.get('message')
