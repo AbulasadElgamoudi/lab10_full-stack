@@ -54,6 +54,38 @@ class Users(Resource):
         if not user:
             api.abort(404, f"User {user_id} does not exist")
         return user, 200
+    
+    def put(self, user_id):
+        user = User.query.filter_by(id=user_id).first()
+        print(user)
+        if not user:
+            api.abort(404, f"User {user_id} does not exist")
+            
+        user_email = user.email
+        print("User email", user_email)
+        user_username = user.username
+        print("User username", user_username)
+        
+        email = request.get_json().get('email')
+        print("Data email", email)
+        username = request.get_json().get('username')
+        print("Data username", username)
+        
+        if email:
+            user_exists = User.query.filter_by(email=email).first()
+            
+            if user_exists:
+                return {'message': 'Sorry. That email already exists.'}, 400
+            print("In Email")
+            user.email = email
+            db.session.commit()
+            return {'message': f'User email changed from {user_email} to {email}'}, 200
+        if username:
+            print("In Username")
+            user.username = username
+            print(user.username)
+            db.session.commit()
+            return {'message': f'User username changed from {user_username} to {username}'}, 200
 
 
 api.add_resource(UsersList, '/users')

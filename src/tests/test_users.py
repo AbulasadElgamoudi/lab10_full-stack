@@ -99,4 +99,21 @@ def test_all_users(test_app, test_database, add_user):
     assert 'fletcher' in data[1]['username']
     assert 'fletcher@notreal.com' in data[1]['email']
 
-
+def test_edit_email(test_app, test_database, add_user):
+    user = add_user('john', 'john@algonquinlive.com')
+    client = test_app.test_client()
+    resp = client.put(f'/users/{user.id}', data=json.dumps({ 'email': 'john@gmail.com' }), content_type='application/json')
+    print("Test data response", resp.data)
+    data = json.loads(resp.data.decode())
+    print(data)
+    assert resp.status_code == 200
+    assert f'User email changed from john@algonquinlive.com to john@gmail.com' in data.get('message')
+    
+def test_edit_username(test_app, test_database, add_user):
+    user = add_user('john', 'john@algonquinlive.com')
+    client = test_app.test_client()
+    resp = client.put(f'/users/{user.id}', data=json.dumps({ 'username': 'john21' }), content_type='application/json')
+    data = json.loads(resp.data.decode())
+    print(data)
+    assert resp.status_code == 200
+    assert f'User username changed from john to john21' in data.get('message')
